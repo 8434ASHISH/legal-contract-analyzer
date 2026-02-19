@@ -1,2 +1,16 @@
-# legal-contract-analyzer
- This is a service agreement between Acme Corp and Beta Inc. The contract automatically renews every year unless you give 90 days notice before the renewal date. You can terminate with 30 days notice, but liability is capped at $50,000. Watch out for the auto-renewal clause on page 12 - it could lock you in for another year without realizing it.
+# Legal Contract Analyzer
+
+A tool to analyze legal contracts using AI. Backend: FastAPI, Frontend: HTML/CSS/JS.
+
+## Features
+- PDF extraction
+- Chunking and embedding
+- ChromaDB vector storage
+- Gemini API integration
+- Analysis dashboard
+
+## Setup
+1. Install Python dependencies from backend/requirements.txt
+2. Set API keys in .env
+3. Run backend/app.py with FastAPI/Uvicorn
+4. Open frontend/index.html in browser
