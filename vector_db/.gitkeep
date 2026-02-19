@@ -1,0 +1,11 @@
+# Vector Database directory
+# ChromaDB files will be stored here
+# This directory is ignored by Git (except this file)
+#
+# ChromaDB creates:
+# - chroma.sqlite3
+# - index files
+# - metadata files
+#
+# DO NOT commit database files to Git
+# Only this .gitkeep file should be version controlled
