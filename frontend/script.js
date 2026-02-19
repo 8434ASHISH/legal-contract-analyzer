@@ -2,7 +2,7 @@
 // Automatically detect environment - Local vs Production
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8000'  // Local development
-    : 'https://legal-contract-analyzer-tjvk.onrender.com'; // Production (Render)
+    : 'https://legal-contract-analyzer-tjvk.onrender.com'; // Production (Render) - FIXED URL
 
 console.log('🌐 API Base URL:', API_BASE_URL); // Debug ke liye
 
@@ -1001,3 +1001,4 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
