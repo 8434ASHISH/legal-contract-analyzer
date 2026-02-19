@@ -1,5 +1,5 @@
 // ===== GLOBAL VARIABLES =====
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://legal-contract-analyzer-tjvk.onrender.com';
 let currentUser = null;
 let uploadedFiles = [];
 let analysisJobs = {};
@@ -913,4 +913,5 @@ if ('serviceWorker' in navigator) {
             console.log('ServiceWorker registration failed:', error);
         });
     });
+
 }
