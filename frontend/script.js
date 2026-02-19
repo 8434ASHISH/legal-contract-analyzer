@@ -1,5 +1,11 @@
 // ===== GLOBAL VARIABLES =====
-const API_BASE_URL = 'https://legal-contract-analyzer-tjvk.onrender.com';
+// Automatically detect environment - Local vs Production
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8000'  // Local development
+    : 'https://legal-contract-analyzer-tjvk.onrender.com'; // Production (Render)
+
+console.log('🌐 API Base URL:', API_BASE_URL); // Debug ke liye
+
 let currentUser = null;
 let uploadedFiles = [];
 let analysisJobs = {};
@@ -17,6 +23,7 @@ const elements = {
     
     // Upload
     uploadArea: document.getElementById('uploadArea'),
+    dropZone: document.getElementById('dropZone'),
     fileInput: document.getElementById('fileInput'),
     progressContainer: document.getElementById('progressContainer'),
     progressFill: document.getElementById('progressFill'),
@@ -31,6 +38,10 @@ const elements = {
     timeSaved: document.getElementById('timeSaved'),
     costSaved: document.getElementById('costSaved'),
     roiPercent: document.getElementById('roiPercent'),
+    
+    // Demo Upload
+    demoUpload: document.getElementById('demoUpload'),
+    demoFile: document.getElementById('demoFile'),
     
     // Tabs
     tabs: document.querySelectorAll('.tab'),
@@ -54,6 +65,7 @@ const elements = {
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Legalyze AI Frontend Initialized');
     initAOS();
     initCustomCursor();
     initNavbar();
@@ -68,16 +80,34 @@ document.addEventListener('DOMContentLoaded', () => {
     initAnimations();
     checkAuth();
     loadSampleData();
+    checkAPIHealth();
 });
+
+// ===== API HEALTH CHECK =====
+async function checkAPIHealth() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/`);
+        const data = await response.json();
+        console.log('✅ Backend Connected:', data);
+        
+        // Show success notification
+        showNotification('Backend connected successfully!', 'success');
+    } catch (error) {
+        console.error('❌ Backend Connection Failed:', error);
+        showNotification('Warning: Backend connection failed. Please check API URL.', 'warning');
+    }
+}
 
 // ===== AOS INITIALIZATION =====
 function initAOS() {
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100,
-        easing: 'ease-in-out'
-    });
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100,
+            easing: 'ease-in-out'
+        });
+    }
 }
 
 // ===== CUSTOM CURSOR =====
@@ -179,6 +209,21 @@ function initUpload() {
             handleFileUpload(e.target.files[0]);
         }
     });
+
+    // Demo upload
+    if (elements.demoUpload && elements.demoFile) {
+        elements.demoUpload.addEventListener('click', () => {
+            elements.demoFile.click();
+        });
+
+        elements.demoFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                alert(`Demo: ${fileName} selected! (Full functionality in dashboard)`);
+                window.location.href = 'dashboard.html?demo=true';
+            }
+        });
+    }
 }
 
 async function handleFileUpload(file) {
@@ -205,16 +250,20 @@ async function handleFileUpload(file) {
         const formData = new FormData();
         formData.append('file', file);
         
+        console.log('📤 Uploading to:', `${API_BASE_URL}/api/upload`);
+        
         const uploadResponse = await fetch(`${API_BASE_URL}/api/upload`, {
             method: 'POST',
             body: formData
         });
         
         if (!uploadResponse.ok) {
-            throw new Error('Upload failed');
+            throw new Error(`Upload failed: ${uploadResponse.status}`);
         }
         
         const uploadData = await uploadResponse.json();
+        console.log('✅ Upload success:', uploadData);
+        
         updateProgress(30, 'File uploaded, starting analysis...');
         
         // Start analysis
@@ -222,15 +271,21 @@ async function handleFileUpload(file) {
             method: 'POST'
         });
         
+        if (!analyzeResponse.ok) {
+            throw new Error(`Analysis start failed: ${analyzeResponse.status}`);
+        }
+        
         const analyzeData = await analyzeResponse.json();
+        console.log('✅ Analysis started:', analyzeData);
+        
         const jobId = analyzeData.job_id;
         
         // Poll for progress
         await pollAnalysisProgress(jobId);
         
     } catch (error) {
-        console.error('Upload error:', error);
-        showNotification('Error uploading file. Please try again.', 'error');
+        console.error('❌ Upload error:', error);
+        showNotification(`Error: ${error.message}. Please try again.`, 'error');
         hideProgress();
     }
 }
@@ -242,17 +297,25 @@ async function pollAnalysisProgress(jobId) {
     const interval = setInterval(async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/status/${jobId}`);
+            
+            if (!response.ok) {
+                throw new Error(`Status check failed: ${response.status}`);
+            }
+            
             const data = await response.json();
+            console.log('📊 Progress:', data);
             
             updateProgress(data.progress, steps[stepIndex] || 'Processing...');
             
             if (data.progress >= 100) {
                 clearInterval(interval);
+                updateProgress(100, 'Analysis complete!');
+                
                 setTimeout(() => {
                     hideProgress();
-                    showNotification('Analysis complete!', 'success');
+                    showNotification('Analysis complete! Redirecting to dashboard...', 'success');
                     window.location.href = `dashboard.html?job=${jobId}`;
-                }, 1000);
+                }, 1500);
             }
             
             // Update step
@@ -261,7 +324,9 @@ async function pollAnalysisProgress(jobId) {
             }
             
         } catch (error) {
-            console.error('Progress poll error:', error);
+            console.error('❌ Progress poll error:', error);
+            clearInterval(interval);
+            showNotification('Error checking progress. Please check dashboard.', 'error');
         }
     }, 2000);
 }
@@ -426,7 +491,7 @@ async function sendMessage() {
     try {
         // Get contract ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const contractId = urlParams.get('contract_id');
+        const contractId = urlParams.get('contract_id') || urlParams.get('job');
         
         if (!contractId) {
             addChatMessage('Please upload a contract first.', 'assistant');
@@ -443,13 +508,17 @@ async function sendMessage() {
             body: JSON.stringify({ question: message })
         });
         
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         // Remove typing indicator
         hideTypingIndicator();
         
         // Add assistant response
-        let responseText = data.answer;
+        let responseText = data.answer || 'Sorry, I could not process your question.';
         if (data.citations && data.citations.length > 0) {
             responseText += '\n\n📚 Sources: ' + data.citations.join(', ');
         }
@@ -457,7 +526,7 @@ async function sendMessage() {
         addChatMessage(responseText, 'assistant');
         
     } catch (error) {
-        console.error('Chat error:', error);
+        console.error('❌ Chat error:', error);
         hideTypingIndicator();
         addChatMessage('Sorry, I encountered an error. Please try again.', 'assistant');
     }
@@ -589,6 +658,7 @@ async function handleLogin(e) {
     
     try {
         // TODO: Implement actual login API call
+        console.log('Login attempt:', email);
         showNotification('Login successful!', 'success');
         
         setTimeout(() => {
@@ -609,6 +679,7 @@ async function handleSignup(e) {
     
     try {
         // TODO: Implement actual signup API call
+        console.log('Signup attempt:', name, email);
         showNotification('Account created successfully!', 'success');
         
         setTimeout(() => {
@@ -630,6 +701,7 @@ async function handleContact(e) {
     
     try {
         // TODO: Implement actual contact API call
+        console.log('Contact message:', name, email, message);
         showNotification('Message sent successfully!', 'success');
         elements.contactForm.reset();
         
@@ -640,39 +712,68 @@ async function handleContact(e) {
 
 // ===== NOTIFICATIONS =====
 function showNotification(message, type = 'info') {
+    // Check if notification container exists, if not create it
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        `;
+        document.body.appendChild(container);
+    }
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close"><i class="bi bi-x"></i></button>
+    notification.style.cssText = `
+        background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : type === 'warning' ? '#F59E0B' : '#3B82F6'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
     `;
     
-    document.body.appendChild(notification);
+    notification.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <span style="flex: 1;">${message}</span>
+        <button style="background: none; border: none; color: white; cursor: pointer;" onclick="this.parentElement.remove()">
+            <i class="bi bi-x"></i>
+        </button>
+    `;
     
-    // Show animation
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
+    container.appendChild(notification);
     
     // Auto hide after 5 seconds
     setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        if (notification.parentElement) {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }
     }, 5000);
-    
-    // Close button
-    notification.querySelector('.notification-close').addEventListener('click', () => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    });
 }
+
+// Add animation styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
 
 // ===== SMOOTH SCROLL =====
 function initSmoothScroll() {
@@ -787,24 +888,10 @@ function checkAuth() {
     const token = localStorage.getItem('authToken');
     
     if (token) {
-        // Validate token
-        fetch(`${API_BASE_URL}/api/auth/validate`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.valid) {
-                currentUser = data.user;
-                updateUIForAuth();
-            } else {
-                localStorage.removeItem('authToken');
-            }
-        })
-        .catch(() => {
-            localStorage.removeItem('authToken');
-        });
+        // Validate token (mock for now)
+        console.log('User authenticated with token:', token);
+        currentUser = { name: 'Demo User', email: 'user@example.com' };
+        updateUIForAuth();
     }
 }
 
@@ -897,12 +984,12 @@ window.printReport = function() {
 
 // ===== ERROR HANDLING =====
 window.addEventListener('error', (e) => {
-    console.error('Global error:', e.error);
+    console.error('❌ Global error:', e.error);
     showNotification('An error occurred. Please try again.', 'error');
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-    console.error('Unhandled rejection:', e.reason);
+    console.error('❌ Unhandled rejection:', e.reason);
     showNotification('An error occurred. Please try again.', 'error');
 });
 
@@ -913,5 +1000,4 @@ if ('serviceWorker' in navigator) {
             console.log('ServiceWorker registration failed:', error);
         });
     });
-
 }
