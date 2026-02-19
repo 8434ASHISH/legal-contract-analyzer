@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyd
+*.pyo
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.log
+
+# Backend
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.coverage
+backend/.pytest_cache/
+
+# Uploaded Files (CRITICAL - Yeh Git mein nahi jana chahiye)
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Vector DB Files (CRITICAL - Yeh Git mein nahi jana chahiye)
+vector_db/*
+!vector_db/.gitkeep
+chroma_db/
+*.chroma.db
+*.sqlite3
+*.duckdb
+
+# Sample Contracts - Keep these if you add them
+# data/sample_contracts/*.pdf
+# data/sample_contracts/*.docx
+# !data/sample_contracts/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.cache
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.development
+.env.production
+
+# Deployment
+render.yaml
+Dockerfile
+docker-compose.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.sql
