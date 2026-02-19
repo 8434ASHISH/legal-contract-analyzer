@@ -1,0 +1,6 @@
+# Uploads directory
+# User uploaded files will be stored here
+# This directory is ignored by Git (except this file)
+#
+# DO NOT commit actual uploaded files to Git
+# Only this .gitkeep file should be version controlled
