@@ -1,17 +1,1586 @@
-<!-- Main page (AAP BANOOGE) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Legal Contract Analyzer</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legalyze AI - Professional Legal Contract Analysis Platform</title>
+    
+    <!-- Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Professional Color Palette */
+            --primary-dark: #0A174E;
+            --primary: #1E3A8A;
+            --primary-light: #2563EB;
+            --accent: #4F46E5;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #0F172A;
+            --text-gray: #475569;
+            --text-light: #94A3B8;
+            --border: #E2E8F0;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #0A174E, #2563EB);
+            --gradient-accent: linear-gradient(135deg, #4F46E5, #7C3AED);
+            --gradient-glow: linear-gradient(45deg, #0A174E, #1E3A8A, #2563EB);
+            
+            /* Shadows */
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.25);
+            --shadow-glow: 0 0 30px rgba(37, 99, 235, 0.3);
+        }
+
+        body {
+            font-family: 'Satoshi', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s;
+        }
+
+        .cursor-follower {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s ease;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transform: rotate(-5deg);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(0deg);
+        }
+
+        .logo-text {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--gradient-primary);
+            color: white !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(10, 23, 78, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-large {
+            padding: 1.25rem 2.5rem;
+            font-size: 1.125rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+        }
+
+        .floating-card {
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .card-3d {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-3d:hover {
+            transform: perspective(1000px) rotateY(-10deg) rotateX(2deg) translateZ(20px);
+        }
+
+        .contract-preview {
+            margin-bottom: 1.5rem;
+        }
+
+        .contract-line {
+            height: 8px;
+            background: linear-gradient(90deg, var(--border), var(--primary-light));
+            margin: 1rem 0;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contract-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .clause-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .clause-tag:nth-child(1) { animation-delay: 0.1s; background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .clause-tag:nth-child(2) { animation-delay: 0.3s; background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .clause-tag:nth-child(3) { animation-delay: 0.5s; background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* Floating Elements */
+        .floating-icon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) {
+            top: -30px;
+            right: -30px;
+            animation-delay: 0s;
+        }
+
+        .floating-icon:nth-child(2) {
+            bottom: -30px;
+            left: -30px;
+            animation-delay: 1s;
+        }
+
+        .floating-icon:nth-child(3) {
+            top: 50%;
+            right: -50px;
+            animation-delay: 2s;
+        }
+
+        /* Trusted By Section */
+        .trusted-section {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .trusted-title {
+            text-align: center;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.875rem;
+            margin-bottom: 3rem;
+        }
+
+        .trusted-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .trusted-logos:hover {
+            opacity: 1;
+        }
+
+        .trusted-logos img {
+            height: 30px;
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+        }
+
+        .trusted-logos img:hover {
+            filter: grayscale(0);
+            transform: scale(1.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: var(--bg-light);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-desc {
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .demo-window {
+            background: var(--text-dark);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        .demo-header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .demo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .demo-dot:nth-child(1) { background: #FF5F56; }
+        .demo-dot:nth-child(2) { background: #FFBD2E; }
+        .demo-dot:nth-child(3) { background: #27C93F; }
+
+        .demo-content {
+            padding: 2rem;
+            color: white;
+        }
+
+        .demo-upload-area {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .demo-upload-area:hover {
+            border-color: var(--primary-light);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .demo-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 0;
+            background: var(--bg-light);
+        }
+
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            position: relative;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 auto 2rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover .step-number {
+            background: var(--gradient-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* ROI Calculator */
+        .roi-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .roi-calculator {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-light);
+            padding: 3rem;
+            border-radius: 32px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .slider-container {
+            margin: 2rem 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .roi-result {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 24px;
+        }
+
+        .roi-metric {
+            text-align: center;
+        }
+
+        .roi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 0;
+            background: var(--bg-light);
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            margin: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+        }
+
+        .testimonial-title {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-light);
+            padding: 3rem 2rem;
+            border-radius: 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.popular {
+            background: white;
+            box-shadow: var(--shadow-xl);
+            transform: scale(1.05);
+            border: 2px solid var(--primary);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.5rem 3rem;
+            transform: rotate(45deg);
+            font-size: 0.875rem;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1.5rem 0;
+        }
+
+        .price small {
+            font-size: 1rem;
+            color: var(--text-gray);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            margin: 1rem 0;
+            color: var(--text-gray);
+        }
+
+        .pricing-features i {
+            color: var(--success);
+            margin-right: 0.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-logo {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-about {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--gradient-primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin: 0.75rem 0;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-light);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.95); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-stats {
+                justify-content: center;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+            
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .steps-container::before {
+                display: none;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Legal Contract Analyzer</h1>
-    <div id="upload-section">
-        <input type="file" id="contract-upload" accept=".pdf">
-        <button onclick="uploadContract()">Upload</button>
-    </div>
-    <script src="script.js"></script>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="bi bi-shield-shaded"></i>
+                </div>
+                <span class="logo-text">Legalyze AI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="#contact">Contact</a>
+                <a href="#" class="nav-cta">Analyze Contract <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-container">
+            <div class="hero-content" data-aos="fade-up">
+                <span class="hero-badge">
+                    <i class="bi bi-stars"></i> AI-Powered Legal Analysis
+                </span>
+                <h1 class="hero-title">
+                    Turn <span class="gradient-text">Legal Jargon</span> into<br>Crystal Clear Insights
+                </h1>
+                <p class="hero-subtitle">
+                    Legalyze AI analyzes contracts in minutes, extracts key clauses, 
+                    identifies risks, and provides plain English summaries. Save 97% 
+                    of your time and reduce legal costs by up to 80%.
+                </p>
+                <div class="hero-cta">
+                    <a href="#" class="btn btn-primary btn-large">
+                        Start Free Analysis <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline btn-large">
+                        <i class="bi bi-play-circle"></i> Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">97%</div>
+                        <div class="stat-label">Time Saved</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Contracts Analyzed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">₹5K</div>
+                        <div class="stat-label">Avg Savings/Contract</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual" data-aos="fade-left" data-aos-delay="200">
+                <div class="floating-card">
+                    <div class="card-3d">
+                        <div class="contract-preview">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span style="font-weight: 600;">Service Agreement.pdf</span>
+                                <span style="color: var(--success);"><i class="bi bi-check-circle-fill"></i> Analyzed</span>
+                            </div>
+                            <div class="contract-line" style="width: 80%;"></div>
+                            <div class="contract-line" style="width: 60%;"></div>
+                            <div class="contract-line" style="width: 90%;"></div>
+                            <div style="margin-top: 1.5rem;">
+                                <span class="clause-tag"><i class="bi bi-shield-check"></i> Termination</span>
+                                <span class="clause-tag"><i class="bi bi-exclamation-triangle"></i> Liability</span>
+                                <span class="clause-tag"><i class="bi bi-cash"></i> Payment</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="floating-icon">
+                        <i class="bi bi-file-text" style="color: var(--primary); font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="floating-icon">
+                        <i class="bi bi-shield-check" style="color: var(--success); font-size: 1.5rem;"></i>
+                    </div>
+                    <div class="floating-icon">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--danger); font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trusted By Section -->
+    <section class="trusted-section">
+        <div class="container">
+            <h3 class="trusted-title">Trusted by leading law firms & corporations</h3>
+            <div class="trusted-logos">
+                <img src="https://via.placeholder.com/120x40/0A174E/ffffff?text=LEGAL+FIRM+A" alt="Legal Firm">
+                <img src="https://via.placeholder.com/120x40/0A174E/ffffff?text=CORP+B" alt="Corporation">
+                <img src="https://via.placeholder.com/120x40/0A174E/ffffff?text=LAW+FIRM+C" alt="Law Firm">
+                <img src="https://via.placeholder.com/120x40/0A174E/ffffff?text=ENTERPRISE+D" alt="Enterprise">
+                <img src="https://via.placeholder.com/120x40/0A174E/ffffff?text=LEGAL+E" alt="Legal">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">POWERFUL FEATURES</span>
+            <h2 class="section-title">Everything you need for<br>professional contract analysis</h2>
+            <p style="color: var(--text-gray);">AI-powered tools that legal professionals trust</p>
+        </div>
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="feature-card" data-aos="fade-up">
+                <div class="feature-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h3 class="feature-title">Smart Clause Detection</h3>
+                <p class="feature-desc">Automatically identifies 15+ legal clauses with 95% accuracy using advanced AI models.</p>
+            </div>
+            <!-- Feature 2 -->
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <h3 class="feature-title">Risk Heatmap</h3>
+                <p class="feature-desc">Visual risk indicators from Green (Safe) to Red (Critical) for quick prioritization.</p>
+            </div>
+            <!-- Feature 3 -->
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon">
+                    <i class="bi bi-translate"></i>
+                </div>
+                <h3 class="feature-title">Plain English Translation</h3>
+                <p class="feature-desc">Complex legal terms explained in simple language that anyone can understand.</p>
+            </div>
+            <!-- Feature 4 -->
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <h3 class="feature-title">AI Chat Assistant</h3>
+                <p class="feature-desc">Ask questions in natural language, get answers with exact page references.</p>
+            </div>
+            <!-- Feature 5 -->
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-icon">
+                    <i class="bi bi-files"></i>
+                </div>
+                <h3 class="feature-title">Contract Comparison</h3>
+                <p class="feature-desc">Side-by-side comparison with intelligent change detection and highlighting.</p>
+            </div>
+            <!-- Feature 6 -->
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-icon">
+                    <i class="bi bi-download"></i>
+                </div>
+                <h3 class="feature-title">Export & Integrate</h3>
+                <p class="feature-desc">Export reports in PDF, Word, or Excel. Integrate with your existing tools.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Demo Section -->
+    <section class="demo-section">
+        <div class="demo-container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">SEE IT IN ACTION</span>
+                <h2 class="section-title">Live Contract Analysis Demo</h2>
+                <p style="color: var(--text-gray);">Upload a sample contract and see instant results</p>
+            </div>
+            <div class="demo-window" data-aos="zoom-in" data-aos-delay="200">
+                <div class="demo-header">
+                    <span class="demo-dot"></span>
+                    <span class="demo-dot"></span>
+                    <span class="demo-dot"></span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-upload-area" id="demoUpload">
+                        <div class="demo-upload-icon">
+                            <i class="bi bi-cloud-upload"></i>
+                        </div>
+                        <h3 style="margin-bottom: 0.5rem;">Drag & drop your contract</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1.5rem;">or click to browse (PDF, DOCX up to 50MB)</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('demoFile').click()">
+                            Choose File
+                        </button>
+                        <input type="file" id="demoFile" accept=".pdf,.docx,.txt" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">SIMPLE PROCESS</span>
+            <h2 class="section-title">How Legalyze AI Works</h2>
+            <p style="color: var(--text-gray);">Three simple steps to comprehensive contract analysis</p>
+        </div>
+        <div class="steps-container">
+            <div class="step" data-aos="fade-right">
+                <div class="step-number">1</div>
+                <h3 style="margin-bottom: 1rem;">Upload Contract</h3>
+                <p style="color: var(--text-gray);">Drag & drop your PDF, DOCX, or TXT file. Secure encryption ensures your data is safe.</p>
+            </div>
+            <div class="step" data-aos="fade-up">
+                <div class="step-number">2</div>
+                <h3 style="margin-bottom: 1rem;">AI Analysis</h3>
+                <p style="color: var(--text-gray);">Our AI extracts clauses, detects risks, and generates plain English summaries.</p>
+            </div>
+            <div class="step" data-aos="fade-left">
+                <div class="step-number">3</div>
+                <h3 style="margin-bottom: 1rem;">Get Insights</h3>
+                <p style="color: var(--text-gray);">Review comprehensive analysis, ask questions, and export detailed reports.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator -->
+    <section class="roi-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">ROI CALCULATOR</span>
+                <h2 class="section-title">Calculate Your Savings</h2>
+                <p style="color: var(--text-gray);">See how much your firm can save with Legalyze AI</p>
+            </div>
+            <div class="roi-calculator" data-aos="zoom-in">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Contracts per month</span>
+                        <span id="contractCount">50</span>
+                    </div>
+                    <input type="range" class="slider" id="contractSlider" min="10" max="500" value="50" step="10">
+                </div>
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Average contract pages</span>
+                        <span id="pageCount">15</span>
+                    </div>
+                    <input type="range" class="slider" id="pageSlider" min="5" max="100" value="15" step="5">
+                </div>
+                <div class="roi-result">
+                    <div class="roi-metric">
+                        <div class="roi-value" id="timeSaved">122</div>
+                        <div>Hours saved/month</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-value" id="costSaved">₹4.8L</div>
+                        <div>Cost saved/month</div>
+                    </div>
+                    <div class="roi-metric">
+                        <div class="roi-value" id="roiPercent">9,600%</div>
+                        <div>ROI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">TESTIMONIALS</span>
+                <h2 class="section-title">Trusted by Legal Professionals</h2>
+                <p style="color: var(--text-gray);">Join thousands of satisfied lawyers and legal teams</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card" data-aos="fade-up">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">RS</div>
+                        <div>
+                            <div class="testimonial-name">Rajesh Sharma</div>
+                            <div class="testimonial-title">Partner at Lex Legal</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-gray); font-style: italic;">
+                        "Legalyze AI has transformed how we review contracts. What used to take 3 hours now takes 3 minutes. The risk detection is incredibly accurate."
+                    </p>
+                    <div style="margin-top: 1rem; color: var(--warning);">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">PK</div>
+                        <div>
+                            <div class="testimonial-name">Priya Kapoor</div>
+                            <div class="testimonial-title">General Counsel, TechCorp</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-gray); font-style: italic;">
+                        "The plain English summaries are a game-changer. Now our business teams understand contracts without legal jargon. Highly recommended!"
+                    </p>
+                    <div style="margin-top: 1rem; color: var(--warning);">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">AM</div>
+                        <div>
+                            <div class="testimonial-name">Adv. Mehta</div>
+                            <div class="testimonial-title">Independent Legal Consultant</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-gray); font-style: italic;">
+                        "The ROI calculator was spot on. I'm saving ₹50,000 per month on contract reviews. Best investment for my practice."
+                    </p>
+                    <div style="margin-top: 1rem; color: var(--warning);">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-badge">PRICING</span>
+                <h2 class="section-title">Simple, Transparent Pricing</h2>
+                <p style="color: var(--text-gray);">Choose the plan that fits your needs</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card" data-aos="fade-right">
+                    <h3>Starter</h3>
+                    <div class="price">
+                        ₹0 <small>/month</small>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check"></i> 3 contracts/month</li>
+                        <li><i class="bi bi-check"></i> Basic clause detection</li>
+                        <li><i class="bi bi-check"></i> Plain English summary</li>
+                        <li><i class="bi bi-x"></i> Risk heatmap</li>
+                        <li><i class="bi bi-x"></i> AI chat assistant</li>
+                    </ul>
+                    <button class="btn btn-outline" style="width: 100%;">Get Started</button>
+                </div>
+                <!-- Pro Plan (Popular) -->
+                <div class="pricing-card popular" data-aos="zoom-in">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3>Professional</h3>
+                    <div class="price">
+                        ₹2,999 <small>/month</small>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check"></i> 50 contracts/month</li>
+                        <li><i class="bi bi-check"></i> Advanced clause detection</li>
+                        <li><i class="bi bi-check"></i> Risk heatmap & scoring</li>
+                        <li><i class="bi bi-check"></i> AI chat assistant</li>
+                        <li><i class="bi bi-check"></i> Export reports</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Start 14-day Trial</button>
+                </div>
+                <!-- Enterprise Plan -->
+                <div class="pricing-card" data-aos="fade-left">
+                    <h3>Enterprise</h3>
+                    <div class="price">
+                        Custom
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check"></i> Unlimited contracts</li>
+                        <li><i class="bi bi-check"></i> API access</li>
+                        <li><i class="bi bi-check"></i> Custom integrations</li>
+                        <li><i class="bi bi-check"></i> Dedicated support</li>
+                        <li><i class="bi bi-check"></i> SLA guarantee</li>
+                    </ul>
+                    <button class="btn btn-outline" style="width: 100%;">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="background: var(--gradient-primary); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-shield-shaded" style="color: white;"></i>
+                        </div>
+                        <span style="font-size: 1.5rem; font-weight: 700;">Legalyze AI</span>
+                    </div>
+                </div>
+                <p class="footer-about">
+                    AI-powered legal contract analysis platform trusted by leading law firms and corporations worldwide.
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#">API</a></li>
+                    <li><a href="#">Integrations</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Case Studies</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Legalyze AI. All rights reserved. Built for AI Workflow Automation Challenge</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX - 5}px, ${e.clientY - 5}px)`;
+            follower.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = 1;
+            follower.style.opacity = 1;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = 0;
+            follower.style.opacity = 0;
+        });
+
+        // ROI Calculator
+        const contractSlider = document.getElementById('contractSlider');
+        const pageSlider = document.getElementById('pageSlider');
+        const contractCount = document.getElementById('contractCount');
+        const pageCount = document.getElementById('pageCount');
+        const timeSaved = document.getElementById('timeSaved');
+        const costSaved = document.getElementById('costSaved');
+        const roiPercent = document.getElementById('roiPercent');
+
+        function updateROI() {
+            const contracts = parseInt(contractSlider.value);
+            const pages = parseInt(pageSlider.value);
+            
+            contractCount.textContent = contracts;
+            pageCount.textContent = pages;
+            
+            // Manual review: 10 minutes per page
+            const manualHoursPerContract = (pages * 10) / 60;
+            const totalManualHours = manualHoursPerContract * contracts;
+            
+            // AI review: 2 minutes per contract
+            const aiHoursPerContract = 2 / 60;
+            const totalAIHours = aiHoursPerContract * contracts;
+            
+            // Savings
+            const hoursSaved = Math.round(totalManualHours - totalAIHours);
+            timeSaved.textContent = hoursSaved;
+            
+            // Cost savings (assuming ₹3000/hour lawyer rate)
+            const costSavedValue = hoursSaved * 3000;
+            if (costSavedValue >= 100000) {
+                costSaved.textContent = '₹' + (costSavedValue/100000).toFixed(1) + 'L';
+            } else {
+                costSaved.textContent = '₹' + costSavedValue.toLocaleString();
+            }
+            
+            // ROI calculation
+            const monthlySubscription = 2999;
+            const roiValue = Math.round((costSavedValue - monthlySubscription) / monthlySubscription * 100);
+            roiPercent.textContent = roiValue + '%';
+        }
+
+        contractSlider.addEventListener('input', updateROI);
+        pageSlider.addEventListener('input', updateROI);
+        updateROI();
+
+        // Demo upload
+        document.getElementById('demoUpload').addEventListener('click', function() {
+            document.getElementById('demoFile').click();
+        });
+
+        document.getElementById('demoFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                alert('Demo: ' + fileName + ' selected! (Full functionality in dashboard)');
+                window.location.href = 'dashboard.html?demo=true';
+            }
+        });
+    </script>
 </body>
 </html>
