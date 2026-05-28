@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebMarker Pro – Highlighter & Sticky Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--w:#f0f0f0;--y:#f5c518;--g:#6b7280;--border:rgba(255,255,255,.1);--r:10px}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--w);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);z-index:99}
+.nav-brand{font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:.5rem}
+.nav-brand span{background:var(--y);color:#111;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;font-size:.8rem}
+nav ul{list-style:none;display:flex;gap:1.8rem}
+nav ul a{font-size:.85rem;color:var(--g);transition:color .2s}
+nav ul a:hover{color:var(--w)}
+.nav-btn{background:var(--y);color:#111;padding:.45rem 1rem;border-radius:50px;font-size:.85rem;font-weight:600;transition:opacity .2s}
+.nav-btn:hover{opacity:.85}
+
+/* HERO */
+.hero{padding:5rem 2rem 4rem;text-align:center;max-width:700px;margin:0 auto}
+.hero-badge{display:inline-block;border:1px solid rgba(245,197,24,.4);color:var(--y);padding:.3rem .9rem;border-radius:50px;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.4rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--y)}
+.hero p{color:var(--g);font-size:1rem;line-height:1.7;max-width:500px;margin:0 auto 2rem}
+.hero-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.btn-y{background:var(--y);color:#111;padding:.7rem 1.6rem;border-radius:50px;font-weight:700;font-size:.9rem;transition:transform .2s}
+.btn-y:hover{transform:translateY(-2px)}
+.btn-o{border:1px solid var(--border);color:var(--w);padding:.7rem 1.6rem;border-radius:50px;font-size:.9rem;transition:border-color .2s,color .2s}
+.btn-o:hover{border-color:var(--y);color:var(--y)}
+
+/* SECTION */
+section{padding:5rem 2rem}
+.sec-label{text-align:center;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--y);margin-bottom:.5rem}
+.sec-title{text-align:center;font-size:clamp(1.5rem,3vw,2rem);font-weight:700;margin-bottom:.6rem}
+.sec-sub{text-align:center;color:var(--g);font-size:.9rem;max-width:440px;margin:0 auto 3rem}
+
+/* DEMO BROWSER */
+.demo-wrap{max-width:760px;margin:0 auto}
+.browser{background:#0d1117;border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.b-bar{background:#161b27;padding:.6rem 1rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--border)}
+.dots{display:flex;gap:.35rem}
+.dot{width:10px;height:10px;border-radius:50%}
+.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+.url-bar{flex:1;background:#0d1117;border-radius:5px;padding:.25rem .7rem;font-size:.72rem;color:rgba(255,255,255,.35);font-family:monospace}
+.ext-badge{font-size:.65rem;color:#28c840;border:1px solid rgba(40,200,64,.3);padding:.15rem .5rem;border-radius:4px;white-space:nowrap}
+.b-content{padding:1.5rem;min-height:280px;position:relative;overflow:hidden}
+
+/* ARTICLE FAKE */
+.art-title{font-size:.95rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:.8rem}
+.art-body{font-size:.82rem;line-height:1.8;color:rgba(255,255,255,.45)}
+.art-body p{margin-bottom:.5rem}
+.hl{border-radius:3px;padding:1px 2px;transition:background 1.2s ease}
+.hl-y{background:rgba(245,197,24,0)}
+.hl-b{background:rgba(96,165,250,0)}
+.hl-g{background:rgba(74,222,128,0)}
+.hl-p{background:rgba(196,132,246,0)}
+.active .hl-y{background:rgba(245,197,24,.38)}
+.active .hl-b{background:rgba(96,165,250,.38)}
+.active .hl-g{background:rgba(74,222,128,.38)}
+.active .hl-p{background:rgba(196,132,246,.38)}
+
+/* STICKY */
+.sticky{position:absolute;padding:.55rem .7rem;border-radius:7px 7px 7px 0;font-size:.7rem;font-weight:600;max-width:130px;line-height:1.4;transform:scale(0) rotate(-2deg);transition:transform .5s cubic-bezier(.34,1.56,.64,1);color:#111;z-index:4}
+.sticky::after{content:'';position:absolute;bottom:-8px;left:0;width:0;height:0;border-style:solid;border-width:8px 8px 0 0}
+.sticky.s1{background:#f5c518;top:8px;right:12px;transition-delay:.2s}
+.sticky.s1::after{border-color:#d4ab14 transparent transparent}
+.sticky.s2{background:#60a5fa;color:#0c447c;top:100px;right:140px;transition-delay:.5s;transform:rotate(1.5deg) scale(0)}
+.sticky.s2::after{border-color:#3b82f6 transparent transparent}
+.sticky.s3{background:#4ade80;color:#173404;bottom:60px;right:10px;transition-delay:.8s}
+.sticky.s3::after{border-color:#22c55e transparent transparent}
+.active .sticky{transform:scale(1) rotate(-2deg)}
+.active .sticky.s2{transform:scale(1) rotate(1.5deg)}
+.active .sticky.s3{transform:scale(1) rotate(-1deg)}
+
+/* CURSOR */
+.cursor{position:absolute;width:20px;height:20px;pointer-events:none;z-index:10;opacity:0;transition:opacity .3s,top .45s ease,left .45s ease}
+.cursor svg{width:20px;height:20px}
+.active .cursor{opacity:1}
+
+/* DOWNLOAD TOAST */
+.dl-toast{position:absolute;bottom:12px;left:12px;background:#161b27;border:1px solid rgba(74,222,128,.35);border-radius:8px;padding:.5rem .8rem;display:flex;align-items:center;gap:.5rem;font-size:.75rem;transform:translateY(50px);opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);z-index:6}
+.dl-icon{width:22px;height:22px;background:rgba(74,222,128,.15);border-radius:50%;display:grid;place-items:center;font-size:.75rem;flex-shrink:0}
+.active .dl-toast{transform:none;opacity:1;transition-delay:3.2s}
+
+/* TOOLBAR */
+.ext-toolbar{position:absolute;top:8px;left:12px;background:#1e2535;border:1px solid var(--border);border-radius:8px;padding:.4rem .6rem;display:flex;gap:.4rem;align-items:center;opacity:0;transition:opacity .4s;z-index:5}
+.active .ext-toolbar{opacity:1}
+.tb-color{width:14px;height:14px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.tb-color.sel{border-color:#fff}
+
+/* DEMO CONTROLS */
+.demo-ctrls{display:flex;justify-content:center;gap:.8rem;margin-top:1.2rem}
+.demo-ctrls button{background:var(--bg3);border:1px solid var(--border);color:var(--g);padding:.45rem 1rem;border-radius:50px;font-size:.82rem;cursor:pointer;font-family:inherit;transition:all .2s}
+.demo-ctrls button:hover,.demo-ctrls button.on{background:var(--y);color:#111;border-color:var(--y);font-weight:600}
+
+/* FEATURES GRID */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;max-width:900px;margin:0 auto}
+.feat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s,transform .2s}
+.feat:hover{border-color:rgba(245,197,24,.3);transform:translateY(-3px)}
+.feat-icon{font-size:1.5rem;margin-bottom:.7rem}
+.feat h3{font-size:.9rem;font-weight:600;margin-bottom:.4rem}
+.feat p{font-size:.8rem;color:var(--g);line-height:1.6}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;max-width:800px;margin:0 auto}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.8rem;position:relative;transition:transform .2s}
+.price-card:hover{transform:translateY(-3px)}
+.price-card.pop{border:2px solid var(--y)}
+.pop-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--y);color:#111;font-size:.65rem;font-weight:700;padding:.2rem .7rem;border-radius:50px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.plan-n{font-weight:700;font-size:.9rem;margin-bottom:.4rem}
+.plan-p{font-size:2rem;font-weight:700;color:var(--y);margin:.3rem 0}
+.plan-p small{font-size:.85rem;color:var(--g);font-weight:400}
+.plan-save{font-size:.72rem;color:#4ade80;margin-bottom:.9rem}
+.plan-ul{list-style:none;margin-bottom:1.4rem;display:flex;flex-direction:column;gap:.4rem}
+.plan-ul li{font-size:.8rem;color:var(--g);display:flex;align-items:center;gap:.4rem}
+.plan-ul li::before{content:'✓';color:#4ade80;font-weight:700;flex-shrink:0}
+.plan-btn{width:100%;padding:.65rem;border-radius:50px;font-size:.85rem;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:opacity .2s,transform .2s}
+.plan-btn:hover{opacity:.85;transform:scale(1.02)}
+.btn-gold{background:var(--y);color:#111}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--w)}
+
+/* LICENSE */
+.lic-box{max-width:440px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:2rem}
+.lic-label{font-size:.72rem;font-weight:600;color:var(--g);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem}
+.lic-input{width:100%;background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--w);font-size:.9rem;font-family:monospace;letter-spacing:.05em;outline:none;transition:border-color .2s;margin-bottom:.8rem}
+.lic-input:focus{border-color:var(--y)}
+.lic-btn{width:100%;padding:.75rem;background:var(--y);color:#111;border:none;border-radius:50px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;transition:opacity .2s}
+.lic-btn:hover{opacity:.85}
+.lic-msg{margin-top:.7rem;padding:.55rem .8rem;border-radius:7px;font-size:.8rem;font-weight:600;text-align:center;display:none}
+.msg-ok{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80}
+.msg-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171}
+
+/* LANGS */
+.lang-row{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:1.5rem}
+.lang-pill{background:var(--bg2);border:1px solid var(--border);border-radius:50px;padding:.4rem 1rem;font-size:.82rem;display:flex;align-items:center;gap:.4rem;transition:border-color .2s,color .2s}
+.lang-pill:hover{border-color:var(--y);color:var(--y)}
+
+/* DARK STRIP */
+.dark-strip{background:#07080c;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
+.dark-strip h3{font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.dark-strip p{font-size:.85rem;color:var(--g)}
+
+/* FOOTER */
+footer{padding:2.5rem 2rem;text-align:center;border-top:1px solid var(--border)}
+footer p{font-size:.8rem;color:rgba(255,255,255,.25)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span>✏</span> WebMarker Pro</div>
+  <ul>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#license">Activate</a></li>
+  </ul>
+  <a href="#pricing" class="nav-btn">Add to Chrome →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Chrome Extension · Works on every website</div>
+  <h1>Highlight. Note. Download.<br><em>Any page, anywhere.</em></h1>
+  <p>Select text to highlight it, drop sticky notes on any element, and export everything as a .txt file — all in one click.</p>
+  <div class="hero-btns">
+    <a href="#pricing" class="btn-y">Get WebMarker Pro →</a>
+    <a href="#demo" class="btn-o">See it live ↓</a>
+  </div>
+</div>
+
+<!-- DEMO -->
+<section id="demo" style="padding-top:2rem">
+  <div class="sec-label">Live demo</div>
+  <div class="sec-title">Watch it work in real time</div>
+  <div class="sec-sub">Press Play and watch highlighting, sticky notes and download in action</div>
+
+  <div class="demo-wrap reveal">
+    <div class="browser">
+      <div class="b-bar">
+        <div class="dots"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>
+        <div class="url-bar">medium.com/ai-research-trends-2025</div>
+        <div class="ext-badge">● WebMarker Active</div>
+      </div>
+      <div class="b-content" id="bc">
+        <div class="cursor" id="cur"><svg viewBox="0 0 20 20" fill="none"><path d="M4 2l12 8-6 1-3 7L4 2z" fill="white" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+        <div class="ext-toolbar" id="tb">
+          <div class="tb-color sel" style="background:#f5c518"></div>
+          <div class="tb-color" style="background:#60a5fa"></div>
+          <div class="tb-color" style="background:#4ade80"></div>
+          <div class="tb-color" style="background:#c084fc"></div>
+          <span style="width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 2px"></span>
+          <span style="font-size:.65rem;color:var(--g)">📌 Note</span>
+          <span style="font-size:.65rem;color:var(--g)">⬇ Save</span>
+        </div>
+        <div class="sticky s1">📌 Key stat!<br><span style="font-weight:400;font-size:.62rem">Follow up later</span></div>
+        <div class="sticky s2">🔵 Check source<br><span style="font-weight:400;font-size:.62rem">Verify claim</span></div>
+        <div class="sticky s3">✅ Confirmed<br><span style="font-weight:400;font-size:.62rem">Cross-referenced</span></div>
+        <div class="dl-toast">
+          <div class="dl-icon">⬇</div>
+          <div><div style="font-weight:600;color:var(--w)">highlights_article.txt</div><div style="font-size:.68rem;color:var(--g)">4 highlights · 3 notes saved</div></div>
+        </div>
+        <div class="art-title">AI Research Trends in 2025 — What Changed Everything</div>
+        <div class="art-body">
+          <p>The field of artificial intelligence has seen a dramatic acceleration. <span class="hl hl-y">Large language models now score above 90% on professional-level reasoning benchmarks</span>, a milestone researchers expected only by 2030.</p>
+          <p>Hardware improvements made this possible. <span class="hl hl-b">Next-generation chips deliver 12x inference speed at half the power consumption</span> compared to 2022 models, making on-device AI finally viable for consumers worldwide.</p>
+          <p>The alignment challenge remains central. <span class="hl hl-p">Safety-focused training techniques have reduced harmful outputs by over 80% across leading models</span>, though researchers caution that new failure modes continue to emerge at scale.</p>
+          <p>Perhaps most surprisingly, <span class="hl hl-g">open-source models closed the gap to within 5% of proprietary systems</span> on most standard benchmarks, fundamentally changing the competitive landscape for AI deployment.</p>
+        </div>
+      </div>
+    </div>
+    <div class="demo-ctrls">
+      <button id="playBtn" onclick="playDemo()">▶ Play Demo</button>
+      <button onclick="resetDemo()">↺ Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="sec-label">Features</div>
+  <div class="sec-title">Everything you need</div>
+  <div class="sec-sub">Simple tools that work on every single website — no exceptions.</div>
+  <div class="feat-grid reveal">
+    <div class="feat"><div class="feat-icon">🖊</div><h3>4-color highlighting</h3><p>Highlight text in yellow, blue, green or purple on any website. Your marks persist across visits.</p></div>
+    <div class="feat"><div class="feat-icon">📌</div><h3>Sticky notes</h3><p>Drop a note on any element. It stays exactly where you put it every time you return to that page.</p></div>
+    <div class="feat"><div class="feat-icon">⬇</div><h3>Download as .txt</h3><p>Export all highlights and notes to a clean text file with URL, date and context included.</p></div>
+    <div class="feat"><div class="feat-icon">🌐</div><h3>Works everywhere</h3><p>GitHub, Medium, Wikipedia, news sites, paywalls — WebMarker works on every page you visit.</p></div>
+    <div class="feat"><div class="feat-icon">🌙</div><h3>Dark mode</h3><p>Full dark mode built in. Auto-detects your system preference. Easy on the eyes at night.</p></div>
+    <div class="feat"><div class="feat-icon">🔑</div><h3>License key</h3><p>One key, unlimited devices. Buy once, use everywhere — no per-device fees ever.</p></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="background:var(--bg2)">
+  <div class="sec-label">Pricing</div>
+  <div class="sec-title">Simple, honest pricing</div>
+  <div class="sec-sub">No hidden fees. Cancel monthly anytime. Competitors charge 3–4× more.</div>
+  <div class="price-grid reveal">
+    <div class="price-card">
+      <div class="plan-n">Monthly</div>
+      <div class="plan-p">$1.99 <small>/mo</small></div>
+      <div class="plan-save" style="color:var(--g)">Pay month-to-month</div>
+      <ul class="plan-ul">
+        <li>All features unlocked</li>
+        <li>Unlimited highlights</li>
+        <li>Sticky notes</li>
+        <li>.txt export</li>
+        <li>1 device</li>
+      </ul>
+      <button class="plan-btn btn-ghost" onclick="openPay('monthly')">Get Monthly</button>
+    </div>
+    <div class="price-card pop">
+      <div class="pop-tag">⚡ Best Value</div>
+      <div class="plan-n">Yearly</div>
+      <div class="plan-p">$14.99 <small>/yr</small></div>
+      <div class="plan-save">Save 37% vs monthly · $1.25/mo</div>
+      <ul class="plan-ul">
+        <li>All features unlocked</li>
+        <li>Unlimited highlights + notes</li>
+        <li>.txt export</li>
+        <li>Priority support</li>
+        <li>Up to 3 devices</li>
+      </ul>
+      <button class="plan-btn btn-gold" onclick="openPay('yearly')">Get Yearly</button>
+    </div>
+    <div class="price-card">
+      <div class="plan-n">Lifetime</div>
+      <div class="plan-p">$29.99 <small>once</small></div>
+      <div class="plan-save">Pay once, own it forever</div>
+      <ul class="plan-ul">
+        <li>Everything in Yearly</li>
+        <li>All future updates free</li>
+        <li>Unlimited devices</li>
+        <li>VIP support</li>
+        <li>Early feature access</li>
+      </ul>
+      <button class="plan-btn btn-ghost" onclick="openPay('lifetime')">Get Lifetime</button>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem;font-size:.78rem;color:var(--g)">Competitors: Hypothesis ~$47.88/yr · Liner ~$35.99/yr · Glasp ~$39.99/yr</p>
+</section>
+
+<!-- LICENSE -->
+<section id="license">
+  <div class="sec-label">Activation</div>
+  <div class="sec-title">Activate your license</div>
+  <div class="sec-sub">Paste the key you received after purchase</div>
+  <div class="lic-box reveal">
+    <div class="lic-label">License key</div>
+    <input class="lic-input" id="licKey" type="text" placeholder="WMP-XXXX-XXXX-XXXX" maxlength="20">
+    <button class="lic-btn" onclick="activateLic()">🔑 Activate License</button>
+    <div class="lic-msg msg-ok" id="licOk">✅ License activated! Extension unlocked.</div>
+    <div class="lic-msg msg-err" id="licErr">❌ Invalid key. Please check and try again.</div>
+  </div>
+</section>
+
+<!-- LANGUAGES -->
+<section style="padding:3.5rem 2rem;text-align:center">
+  <div class="sec-label">Languages</div>
+  <div class="sec-title" style="margin-bottom:.4rem">Available in 5 languages</div>
+  <div class="lang-row reveal">
+    <div class="lang-pill">🇬🇧 English</div>
+    <div class="lang-pill">🇮🇳 हिन्दी</div>
+    <div class="lang-pill">🇩🇪 Deutsch</div>
+    <div class="lang-pill">🇫🇷 Français</div>
+    <div class="lang-pill">🇪🇸 Español</div>
+  </div>
+</section>
+
+<!-- DARK MODE -->
+<div class="dark-strip">
+  <h3>🌙 Dark mode included</h3>
+  <p>Auto-detects your system theme. Toggle manually anytime. OLED-optimised pure black background.</p>
+</div>
+
+<footer>
+  <p>© 2025 WebMarker Pro · Smart Highlighter & Sticky Notes · <a href="mailto:support@webmarkerpro.com" style="color:var(--y)">support@webmarkerpro.com</a></p>
+</footer>
+
+<script>
+var playing=false,timers=[];
+function playDemo(){
+  if(playing)return;playing=true;
+  var btn=document.getElementById('playBtn');
+  btn.classList.add('on');btn.textContent='⏸ Playing...';
+  var bc=document.getElementById('bc');bc.classList.add('active');
+  var cur=document.getElementById('cur');
+  var moves=[
+    {t:'60px',l:'30px',d:200},{t:'62px',l:'180px',d:600},
+    {t:'62px',l:'390px',d:1000},{t:'110px',l:'30px',d:1500},
+    {t:'112px',l:'300px',d:1900},{t:'170px',l:'30px',d:2400},
+    {t:'172px',l:'350px',d:2800},{t:'220px',l:'30px',d:3200},
+    {t:'222px',l:'360px',d:3600}
+  ];
+  moves.forEach(function(m){
+    var t=setTimeout(function(){cur.style.top=m.t;cur.style.left=m.l;},m.d);
+    timers.push(t);
+  });
+  var done=setTimeout(function(){
+    playing=false;btn.classList.remove('on');btn.textContent='▶ Play Again';
+  },5000);
+  timers.push(done);
+}
+function resetDemo(){
+  timers.forEach(clearTimeout);timers=[];playing=false;
+  var bc=document.getElementById('bc');bc.classList.remove('active');
+  var cur=document.getElementById('cur');
+  cur.style.transition='none';cur.style.top='60px';cur.style.left='30px';
+  var btn=document.getElementById('playBtn');
+  btn.classList.remove('on');btn.textContent='▶ Play Demo';
+}
+function openPay(p){
+  var urls={monthly:'#monthly',yearly:'#yearly',lifetime:'#lifetime'};
+  alert('Opening payment for '+p+' plan.\nReplace this alert with your Stripe/Gumroad payment URL in the openPay() function.');
+}
+function activateLic(){
+  var k=document.getElementById('licKey').value.trim();
+  var ok=document.getElementById('licOk'),err=document.getElementById('licErr');
+  ok.style.display='none';err.style.display='none';
+  if(!k){err.style.display='block';err.textContent='⚠ Please enter a license key.';return;}
+  document.querySelector('.lic-btn').textContent='⏳ Validating...';
+  setTimeout(function(){
+    if(k.toUpperCase().startsWith('WMP')&&k.length>=8){
+      ok.style.display='block';
+      document.querySelector('.lic-btn').textContent='✅ Activated!';
+      document.getElementById('licKey').style.borderColor='#4ade80';
+    }else{
+      err.style.display='block';
+      document.querySelector('.lic-btn').textContent='🔑 Activate License';
+      document.getElementById('licKey').style.borderColor='#f87171';
+      setTimeout(function(){document.getElementById('licKey').style.borderColor='';},2000);
+    }
+  },1000);
+}
+document.getElementById('licKey').addEventListener('input',function(e){
+  var v=e.target.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase();
+  e.target.value=v;
+  e.target.style.borderColor='';
+  document.getElementById('licOk').style.display='none';
+  document.getElementById('licErr').style.display='none';
+  document.querySelector('.lic-btn').textContent='🔑 Activate License';
+});
+var obs=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+var demoObs=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting&&!playing)setTimeout(playDemo,500);});},{threshold:.6});
+var demoEl=document.getElementById('bc');if(demoEl)demoObs.observe(demoEl);
+</script>
+</body>
+</html>
